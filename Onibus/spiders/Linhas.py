@@ -12,18 +12,17 @@ class LinhasSpider(scrapy.Spider):
             teste = cat.xpath('//div[contains(@class, "block module")]/div[contains(@class, "content")]/ul/li/a')            
             for li in teste:
                 link = li.xpath('./@href').extract_first()
-                yield scrapy.Request(link = link, callback=self.parse_conteudo)
-
-        next_page = response.xpath('//div[contains(@class, "block module")]/div[contains(@class, "content")]/ul/li/a/@href').extract()
-
-        if next_page:
-            for html in next_page:
-                next_href = next_page[0]
-                next_page_url = 'http://www.ctaonline.com.br%s' % link
-                yield next_page_url
-        request = scrapy.Request(next_page_url, callback = self.parse_links)
-        request.meta['link'] = link
-                
+                yield scrapy.Request (
+                    url =  link,
+                    callback=self.parse_paginas
+                )
+    def parse_paginas(self, response, url):
+        
+        yield scrapy.Request(
+            'http://www.ctaonline.com.br%s' %url, 
+            callback=self.parse_conteudo
+        )
+                      
         
             # yield scrapy.Request(
             #     link = 'http://www.ctaonline.com.br%s' % link,               
